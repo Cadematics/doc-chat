@@ -58,7 +58,7 @@ def build_query_engine():
         embed_model=embed_model,
     )
 
-    base_retriever = index.as_retriever(similarity_top_k=15)
+    base_retriever = index.as_retriever(similarity_top_k=20)
     retriever = AutoMergingRetriever(base_retriever, storage_context, verbose=False)
     reranker = CohereRerank(api_key=os.getenv("COHERE_API_KEY"), top_n=4)
     llm = OpenAI(model="gpt-4o", temperature=0.0)
@@ -68,7 +68,6 @@ def build_query_engine():
         node_postprocessors=[reranker],
         llm=llm,
     )
-
 
 @app.get("/documents")
 def list_documents():
