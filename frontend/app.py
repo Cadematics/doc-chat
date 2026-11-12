@@ -35,7 +35,15 @@ with st.sidebar:
             docs = doc_res.json().get("documents", [])
             if docs:
                 for d in docs:
-                    st.markdown(f"- 📄 `{d}`")
+                    col1, col2 = st.columns([0.82, 0.18])
+                    col1.markdown(f"📄 `{d}`")
+                    if col2.button("🗑️", key=f"del_{d}", help=f"Remove {d} from index"):
+                        del_res = requests.delete(f"{API_URL}/documents/{d}", timeout=30)
+                        if del_res.ok:
+                            st.toast(f"Removed {d} from database")
+                            st.rerun()
+                        else:
+                            st.error(f"Failed to delete: {del_res.text}")
             else:
                 st.info("No PDFs found in `/docs` yet.")
     except requests.exceptions.ConnectionError:

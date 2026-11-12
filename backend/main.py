@@ -15,7 +15,8 @@ from llama_index.vector_stores.chroma import ChromaVectorStore
 from llama_index.embeddings.openai import OpenAIEmbedding
 from llama_index.llms.openai import OpenAI
 
-from ingest import ingest_documents_async, BASE_DIR, DOCS_DIR, STORAGE_DIR
+from ingest import ingest_documents_async, delete_document, BASE_DIR, DOCS_DIR, STORAGE_DIR
+
 
 load_dotenv(BASE_DIR / "backend" / ".env")
 
@@ -122,3 +123,19 @@ def ask_question(req: QueryRequest):
         )
 
     return {"answer": str(response), "citations": citations}
+
+
+
+
+@app.delete("/documents/{file_name}")
+def remove_document(file_name: str):
+    # Prevent path traversal attacks
+    safe_name = Path(file_name).name
+    result = delete_document(safe_name)
+    if not result["file_removed"] and result["deleted_vectors"] == 0 and result["deleted_docstore_nodes"] == 0:
+        raise HTTPException(status_code=404, detail=f"Document '{safe_name}' not found.")
+    return {"status": "deleted", **result}
+
+
+
+

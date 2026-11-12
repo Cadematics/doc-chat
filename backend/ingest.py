@@ -100,5 +100,52 @@ def ingest_documents(target_files: list[Path] | None = None) -> int:
     return asyncio.run(ingest_documents_async(target_files))
 
 
+def delete_document(file_name: str) -> dict:
+    """Removes a document's vectors from ChromaDB, parent nodes from docstore.json, and raw PDF from docs/."""
+    deleted_vectors = 0
+    deleted_docstore_nodes = 0
+
+    # 1. Remove leaf embeddings from ChromaDB by metadata filter
+    chroma_path = STORAGE_DIR / "chroma_db"
+    if chroma_path.exists():
+        db = chromadb.PersistentClient(path=str(chroma_path))
+        chroma_collection = db.get_or_create_collection("real_estate_disclosures")
+        existing = chroma_collection.get(where={"file_name": file_name})
+        if existing and existing.get("ids"):
+            deleted_vectors = len(existing["ids"])
+            chroma_collection.delete(ids=existing["ids"])
+
+    # 2. Remove both parent & child nodes from SimpleDocumentStore
+    docstore_path = STORAGE_DIR / "docstore.json"
+    if docstore_path.exists():
+        docstore = SimpleDocumentStore.from_persist_path(str(docstore_path))
+        node_ids_to_delete = [
+            node_id
+            for node_id, node in docstore.docs.items()
+            if node.metadata.get("file_name") == file_name
+        ]
+        for node_id in node_ids_to_delete:
+            docstore.delete_document(node_id)
+        deleted_docstore_nodes = len(node_ids_to_delete)
+        docstore.persist(persist_path=str(docstore_path))
+
+    # 3. Remove the physical PDF from docs/
+    pdf_path = DOCS_DIR / file_name
+    file_removed = False
+    if pdf_path.exists():
+        pdf_path.unlink()
+        file_removed = True
+
+    return {
+        "file_name": file_name,
+        "file_removed": file_removed,
+        "deleted_vectors": deleted_vectors,
+        "deleted_docstore_nodes": deleted_docstore_nodes,
+    }
+
+
+
+
+
 if __name__ == "__main__":
     ingest_documents()
