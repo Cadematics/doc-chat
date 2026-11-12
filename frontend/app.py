@@ -3,12 +3,6 @@ import html
 import requests
 import streamlit as st
 
-import html
-import requests
-import streamlit as st
-
-# API_URL = "http://localhost:8000"
-
 API_URL = os.getenv("API_URL", "http://localhost:8000").rstrip("/")
 
 st.set_page_config(
@@ -509,12 +503,16 @@ for msg in st.session_state.messages:
 prompt_input = st.chat_input("Ask anything about your uploaded property documents...")
 
 if prompt_input:
+    history_payload = [
+        {"role": m["role"], "content": m["content"]}
+        for m in st.session_state.messages[-6:]
+    ]
     st.session_state.messages.append({"role": "user", "content": prompt_input})
     with st.spinner("Searching indexed documents & verifying page citations..."):
         try:
             res = requests.post(
                 f"{API_URL}/ask",
-                json={"question": prompt_input},
+                json={"question": prompt_input, "chat_history": history_payload},
                 timeout=120,
             )
             if res.ok:
@@ -534,7 +532,7 @@ if prompt_input:
             st.session_state.messages.append(
                 {
                     "role": "assistant",
-                    "content": "Cannot reach FastAPI backend at `http://localhost:8000`.",
+                    "content": f"Cannot reach FastAPI backend at `{API_URL}`.",
                     "citations": [],
                 }
             )

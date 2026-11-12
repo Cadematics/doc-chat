@@ -32,8 +32,6 @@ app.add_middleware(
 
 MIN_RELEVANCE_SCORE = 0.02
 
-
-
 QA_PROMPT = PromptTemplate(
     "You are a senior real estate transaction and disclosure analyst.\n"
     "Context information from the indexed documents is below:\n"
@@ -52,14 +50,40 @@ QA_PROMPT = PromptTemplate(
 )
 
 
+class ChatMessage(BaseModel):
+    role: str
+    content: str
+
 
 class QueryRequest(BaseModel):
     question: str
+    chat_history: list[ChatMessage] = []
 
 
 def get_indexed_filenames() -> set[str]:
     DOCS_DIR.mkdir(parents=True, exist_ok=True)
     return {f.name for f in DOCS_DIR.glob("*.pdf")}
+
+
+def rewrite_query_with_history(question: str, chat_history: list[ChatMessage]) -> str:
+    """Resolve pronouns/references ('the case', 'it', 'the whole story') into a standalone search query."""
+    if not chat_history:
+        return question
+
+    history_text = "\n".join(
+        f"{m.role.upper()}: {m.content[:600]}" for m in chat_history[-4:]
+    )
+    llm = OpenAI(model="gpt-4o", temperature=0.0)
+    condense_prompt = (
+        "Given the following conversation history and a follow-up question, rewrite the follow-up question "
+        "into a clear, standalone search query that explicitly names the specific subject, person, case number, "
+        "or item being discussed. Do NOT answer the question and do NOT add facts not present in the history.\n\n"
+        f"Conversation History:\n{history_text}\n\n"
+        f"Follow-up Question: {question}\n"
+        "Standalone Question:"
+    )
+    rewritten = str(llm.complete(condense_prompt)).strip()
+    return rewritten or question
 
 
 def build_query_engine():
@@ -140,8 +164,6 @@ def ask_question(req: QueryRequest):
             "citations": [],
         }
 
-    q_lower = req.question.strip().lower()
-
     # 1. Check if the user explicitly referenced a .pdf file that is not in the database
     mentioned_pdfs = re.findall(r"[\w\-\.\(\)]+\.pdf", req.question, flags=re.IGNORECASE)
     indexed_lower = {name.lower(): name for name in indexed_files}
@@ -154,7 +176,11 @@ def ask_question(req: QueryRequest):
             "citations": [],
         }
 
-    # 2. Handle metadata questions about what files are in the database
+    # 2. Rewrite follow-up queries using recent conversation history
+    standalone_question = rewrite_query_with_history(req.question, req.chat_history)
+    q_lower = standalone_question.strip().lower()
+
+    # 3. Handle metadata questions about what files are in the database
     if re.search(
         r"\b(names?|list|which|what|show|how many)\b.*\b(documents?|files?|pdfs?|uploaded|database|indexed)\b",
         q_lower,
@@ -165,7 +191,7 @@ def ask_question(req: QueryRequest):
             "citations": [],
         }
 
-    # 3. Handle broad document overview/summary requests by reading the opening pages directly
+    # 4. Handle broad document overview/summary requests by reading the opening pages directly
     if re.search(r"\b(tell me about (the |this )?document|summarize (the |this )?document|what is this document|overview of (the )?document)\b", q_lower):
         docstore_path = STORAGE_DIR / "docstore.json"
         if docstore_path.exists():
@@ -204,10 +230,9 @@ def ask_question(req: QueryRequest):
                 ]
                 return {"answer": str(summary_resp).strip(), "citations": citations}
 
-    # 4. Standard targeted RAG retrieval + Cohere reranking
-    # 4. Standard targeted RAG retrieval + Cohere reranking
+    # 5. Standard targeted RAG retrieval + Cohere reranking
     engine = build_query_engine()
-    response = engine.query(req.question)
+    response = engine.query(standalone_question)
 
     answer_text = str(response).strip()
     if not response.source_nodes or "information not found in the provided disclosure documents" in answer_text.lower():
