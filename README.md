@@ -25,21 +25,33 @@ source venv/bin/activate
 pip install -r backend/requirements.txt
 2. Add API Keys
 Create backend/.env and add your keys:
+```
+
 
 Code snippet
+```bash
 OPENAI_API_KEY=your_openai_key
 LLAMA_CLOUD_API_KEY=your_llamacloud_key
 COHERE_API_KEY=your_cohere_key
+```
+
 3. Index PDFs & Run the App
 Place your PDFs inside docs/, then run:
 
-Bash
-# 1. Parse and index documents
-cd backend && python ingest.py
 
+# 1. Parse and index documents
+```bash
+cd backend && python ingest.py
+```
 # 2. Start the FastAPI server (Terminal 1)
+```bash
 uvicorn main:app --reload --port 8000
+```
+
 
 # 3. Start the Streamlit UI (Terminal 2)
+```bash
 cd ../frontend && streamlit run app.py
+```
+
 Open http://localhost:8501 in your browser to start asking questions.
