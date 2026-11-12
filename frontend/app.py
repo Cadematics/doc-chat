@@ -1,8 +1,15 @@
+import os
 import html
 import requests
 import streamlit as st
 
-API_URL = "http://localhost:8000"
+import html
+import requests
+import streamlit as st
+
+# API_URL = "http://localhost:8000"
+
+API_URL = os.getenv("API_URL", "http://localhost:8000").rstrip("/")
 
 st.set_page_config(
     page_title="Disclosure AI",
@@ -468,25 +475,30 @@ for msg in st.session_state.messages:
                 )
                 top_cite = citations[0]
                 excerpt = html.escape(top_cite["snippet"][:320].strip())
-
-                st.markdown(
-                    f"""
-                    <div class="findings-card">
-                        <div class="citation-pills">{pills_html}</div>
-                        <div class="verification-box">
-                            <div class="verification-header">
-                                <span>PRIMARY SOURCE VERIFICATION · {html.escape(str(top_cite["file_name"]))} P. {html.escape(str(top_cite["page_number"]))}</span>
-                                <span class="confidence-tag">Verified source excerpt</span>
-                            </div>
-                            <p class="verification-quote">"{excerpt}..."</p>
-                        </div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
+                label = (
+                    f"View primary source verification & all {len(citations)} retrieved excerpts"
+                    if len(citations) > 1
+                    else "View primary source verification"
                 )
 
-                if len(citations) > 1:
-                    with st.expander(f"Inspect all {len(citations)} retrieved source excerpts"):
+                with st.expander(label, expanded=False):
+                    st.markdown(
+                        f"""
+                        <div class="findings-card" style="margin-top:0; margin-bottom:0.75rem;">
+                            <div class="citation-pills">{pills_html}</div>
+                            <div class="verification-box">
+                                <div class="verification-header">
+                                    <span>PRIMARY SOURCE VERIFICATION · {html.escape(str(top_cite["file_name"]))} P. {html.escape(str(top_cite["page_number"]))}</span>
+                                    <span class="confidence-tag">Verified source excerpt</span>
+                                </div>
+                                <p class="verification-quote">"{excerpt}..."</p>
+                            </div>
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
+                    )
+
+                    if len(citations) > 1:
                         for idx, c in enumerate(citations, 1):
                             st.markdown(f"**[{idx}] `{c['file_name']}` — Page {c['page_number']}**")
                             st.code(c["snippet"], language="markdown")
