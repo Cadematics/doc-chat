@@ -1,0 +1,21 @@
+# Secrets & Environment
+.env
+backend/.env
+*.env
+
+# Python Virtual Environments & Cache
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local Vector DB, Docstore & Uploaded Sample PDFs
+storage/
+docs/*.pdf
+!docs/.gitkeep
+
+# OS & Editor Files
+.DS_Store
+.vscode/
+.cursor/
