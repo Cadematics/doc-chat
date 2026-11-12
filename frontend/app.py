@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# --- Custom Editorial CSS matching the Disclosure AI Design ---
+# --- High-Contrast Light Editorial CSS ---
 st.markdown(
     """
 <style>
@@ -19,24 +19,38 @@ st.markdown(
 
 html, body, [class*="css"] {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    color: #111827;
+    color: #0F172A !important;
 }
 
-/* Hide default Streamlit chrome */
-#MainMenu, footer, header[data-testid="stHeader"] {
+/* Hide menu/footer but keep sidebar expand button reachable */
+#MainMenu, footer {
     visibility: hidden;
     height: 0;
 }
 
-.stApp {
-    background-color: #FFFFFF;
+header[data-testid="stHeader"] {
+    background: transparent !important;
 }
 
-/* --- Left Sidebar --- */
+/* Soft Cool-Gray Main Canvas */
+.stApp, [data-testid="stAppViewContainer"], .main {
+    background-color: #F8FAFC !important;
+}
+
+/* Bottom Bar Container */
+[data-testid="stBottom"], [data-testid="stBottom"] > div {
+    background-color: #F8FAFC !important;
+    border-top: 1px solid #E2E8F0 !important;
+}
+
+/* --- Left Sidebar (Always Visible & Distinct Cool Slate Tint) --- */
 section[data-testid="stSidebar"] {
-    background-color: #F9FAFB !important;
-    border-right: 1px solid #E5E7EB !important;
-    width: 280px !important;
+    background-color: #F1F5F9 !important;
+    border-right: 1px solid #CBD5E1 !important;
+    min-width: 295px !important;
+    max-width: 295px !important;
+    transform: none !important;
+    visibility: visible !important;
 }
 
 section[data-testid="stSidebar"] > div {
@@ -45,174 +59,215 @@ section[data-testid="stSidebar"] > div {
     padding-right: 1rem;
 }
 
-/* Primary Dark Upload Button */
+/* File Uploader Box in Sidebar */
+section[data-testid="stSidebar"] [data-testid="stFileUploader"] section {
+    background-color: #FFFFFF !important;
+    border: 1.5px dashed #94A3B8 !important;
+    border-radius: 10px !important;
+    padding: 0.75rem !important;
+}
+
+section[data-testid="stSidebar"] [data-testid="stFileUploader"] small,
+section[data-testid="stSidebar"] [data-testid="stFileUploader"] span,
+section[data-testid="stSidebar"] [data-testid="stFileUploader"] div {
+    color: #334155 !important;
+}
+
+section[data-testid="stSidebar"] [data-testid="stFileUploader"] button {
+    background-color: #EFF6FF !important;
+    color: #1D4ED8 !important;
+    border: 1px solid #BFDBFE !important;
+    border-radius: 6px !important;
+    font-weight: 600 !important;
+}
+
+/* Primary Dark Upload Action Button */
 section[data-testid="stSidebar"] .stButton > button[kind="primary"] {
-    background-color: #111827 !important;
+    background-color: #1E293B !important;
     color: #FFFFFF !important;
     border: none !important;
     border-radius: 8px !important;
-    font-weight: 500 !important;
+    font-weight: 600 !important;
     font-size: 0.875rem !important;
     padding: 0.55rem 1rem !important;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-    transition: background-color 0.15s ease;
+    margin-top: 0.35rem;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12);
 }
 
 section[data-testid="stSidebar"] .stButton > button[kind="primary"]:hover {
-    background-color: #1F2937 !important;
+    background-color: #0F172A !important;
 }
 
-/* Subtle Trash Delete Buttons in Sidebar */
+/* Clean Light Delete Button next to each Document */
 section[data-testid="stSidebar"] .stButton > button[kind="secondary"] {
-    background: transparent !important;
-    border: none !important;
-    color: #9CA3AF !important;
-    padding: 0.2rem 0.35rem !important;
-    min-height: 0 !important;
+    background-color: #FFFFFF !important;
+    border: 1px solid #E2E8F0 !important;
+    color: #64748B !important;
+    border-radius: 6px !important;
+    padding: 0.15rem 0.45rem !important;
+    min-height: 28px !important;
+    font-size: 0.78rem !important;
+    font-weight: 600 !important;
     box-shadow: none !important;
 }
 
 section[data-testid="stSidebar"] .stButton > button[kind="secondary"]:hover {
-    color: #EF4444 !important;
-    background-color: #FEE2E2 !important;
-    border-radius: 6px !important;
+    background-color: #FEF2F2 !important;
+    border-color: #FECACA !important;
+    color: #DC2626 !important;
 }
 
-/* Compact File Uploader Dropzone in Sidebar */
-section[data-testid="stSidebar"] [data-testid="stFileUploader"] section {
-    padding: 0.65rem !important;
+/* Document Row Card in Sidebar */
+.doc-item-pill {
+    background-color: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    padding: 0.45rem 0.65rem;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: #0F172A;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Main Area Secondary Buttons (e.g., New Analysis) */
+.main .stButton > button[kind="secondary"] {
     background-color: #FFFFFF !important;
-    border: 1px dashed #D1D5DB !important;
+    color: #1E293B !important;
+    border: 1px solid #CBD5E1 !important;
     border-radius: 8px !important;
+    font-size: 0.82rem !important;
+    font-weight: 600 !important;
+    padding: 0.4rem 0.85rem !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
-/* --- Top Context Bar --- */
-.top-context-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem 1.5rem;
-    border-bottom: 1px solid #F3F4F6;
-    margin-bottom: 1.25rem;
-    font-size: 0.85rem;
+.main .stButton > button[kind="secondary"]:hover {
+    background-color: #F1F5F9 !important;
+    border-color: #94A3B8 !important;
 }
 
-.context-left {
+/* --- Centered Chat Container --- */
+.main .block-container {
+    max-width: 840px !important;
+    padding-top: 0.75rem !important;
+    padding-bottom: 6.5rem !important;
+}
+
+/* Top Header Card */
+.top-header-box {
+    background-color: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 0.75rem 1.15rem;
     display: flex;
     align-items: center;
-    gap: 0.6rem;
+    gap: 0.7rem;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
 }
 
 .badge-active {
-    background-color: #EFF6FF;
-    color: #2563EB;
+    background-color: #DBEAFE;
+    color: #1D4ED8;
     font-weight: 600;
     font-size: 0.75rem;
-    padding: 0.2rem 0.6rem;
+    padding: 0.22rem 0.65rem;
     border-radius: 999px;
-}
-
-.context-right {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    color: #6B7280;
-    font-size: 0.8rem;
 }
 
 .status-pill-center {
     display: flex;
     justify-content: center;
-    margin-bottom: 1.75rem;
+    margin: 1.1rem 0 1.6rem 0;
 }
 
 .status-pill-center span {
-    background-color: #F9FAFB;
-    border: 1px solid #E5E7EB;
-    color: #4B5563;
-    font-size: 0.75rem;
-    padding: 0.3rem 0.85rem;
+    background-color: #EFF6FF;
+    border: 1px solid #BFDBFE;
+    color: #1E40AF;
+    font-size: 0.76rem;
+    font-weight: 500;
+    padding: 0.32rem 0.95rem;
     border-radius: 999px;
 }
 
-/* --- Centered Chat Feed Container --- */
-.main .block-container {
-    max-width: 820px !important;
-    padding-top: 0.5rem !important;
-    padding-bottom: 6rem !important;
-}
-
-/* User Message Bubble (Right-Aligned Soft Slate/Blue-Gray) */
+/* User Message Bubble */
 .user-row {
     display: flex;
     justify-content: flex-end;
-    margin: 1.25rem 0;
+    margin: 1.15rem 0;
 }
 
 .user-bubble {
-    background-color: #EEF2F6;
-    color: #111827;
+    background-color: #DBEAFE;
+    border: 1px solid #BFDBFE;
+    color: #0F172A;
     padding: 0.85rem 1.15rem;
-    border-radius: 14px;
-    max-width: 72%;
-    font-size: 0.93rem;
+    border-radius: 14px 14px 4px 14px;
+    max-width: 74%;
+    font-size: 0.94rem;
+    font-weight: 500;
     line-height: 1.5;
 }
 
-/* Assistant Synthesis Block */
+/* Assistant Response Card */
+.assistant-card {
+    background-color: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+    padding: 1.15rem 1.35rem;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+
 .synthesis-header {
     display: flex;
     align-items: center;
     gap: 0.45rem;
     font-size: 0.78rem;
-    color: #6B7280;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-}
-
-.synthesis-body {
-    font-size: 0.96rem;
-    line-height: 1.65;
-    color: #111827;
-    margin-bottom: 0.85rem;
+    color: #475569;
+    margin-bottom: 0.6rem;
+    font-weight: 600;
 }
 
 /* Citation Card & Primary Source Verification Box */
 .findings-card {
     background-color: #F8FAFC;
-    border: 1px solid #E2E8F0;
-    border-radius: 12px;
-    padding: 1rem 1.15rem;
-    margin-top: 0.65rem;
-    margin-bottom: 1.25rem;
+    border: 1px solid #CBD5E1;
+    border-radius: 10px;
+    padding: 0.9rem 1.05rem;
+    margin-top: 0.85rem;
 }
 
 .citation-pills {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 0.75rem;
+    gap: 0.45rem;
+    margin-bottom: 0.7rem;
 }
 
 .citation-pill {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    background-color: #FFFFFF;
-    border: 1px solid #E5E7EB;
+    background-color: #EFF6FF;
+    border: 1px solid #BFDBFE;
     border-radius: 6px;
     padding: 0.22rem 0.6rem;
     font-size: 0.76rem;
-    font-weight: 500;
-    color: #374151;
+    font-weight: 600;
+    color: #1E40AF;
 }
 
 .verification-box {
     background-color: #FFFFFF;
-    border: 1px solid #E5E7EB;
-    border-radius: 8px;
-    padding: 0.85rem 1rem;
-    margin-top: 0.5rem;
+    border-left: 3px solid #2563EB;
+    border-top: 1px solid #E2E8F0;
+    border-right: 1px solid #E2E8F0;
+    border-bottom: 1px solid #E2E8F0;
+    border-radius: 6px;
+    padding: 0.8rem 0.95rem;
 }
 
 .verification-header {
@@ -220,15 +275,18 @@ section[data-testid="stSidebar"] [data-testid="stFileUploader"] section {
     justify-content: space-between;
     align-items: center;
     font-size: 0.7rem;
-    font-weight: 600;
+    font-weight: 700;
     letter-spacing: 0.04em;
-    color: #6B7280;
+    color: #475569;
     text-transform: uppercase;
-    margin-bottom: 0.4rem;
+    margin-bottom: 0.35rem;
 }
 
 .confidence-tag {
-    color: #111827;
+    background-color: #DCFCE7;
+    color: #166534;
+    padding: 0.12rem 0.45rem;
+    border-radius: 4px;
     font-weight: 600;
     text-transform: none;
     letter-spacing: normal;
@@ -236,23 +294,40 @@ section[data-testid="stSidebar"] [data-testid="stFileUploader"] section {
 
 .verification-quote {
     font-style: italic;
-    color: #374151;
-    font-size: 0.84rem;
+    color: #1E293B;
+    font-size: 0.85rem;
     line-height: 1.5;
     margin: 0;
 }
 
-/* Floating Pill Chat Input */
+/* Readable High-Contrast Chat Input Box */
 [data-testid="stChatInput"] {
-    max-width: 780px;
+    max-width: 800px;
     margin: 0 auto;
 }
 
 [data-testid="stChatInput"] > div {
-    border-radius: 14px !important;
-    border: 1px solid #E5E7EB !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06) !important;
+    border-radius: 12px !important;
+    border: 1.5px solid #94A3B8 !important;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08) !important;
     background-color: #FFFFFF !important;
+}
+
+[data-testid="stChatInput"] textarea {
+    color: #0F172A !important;
+    background-color: #FFFFFF !important;
+    font-size: 0.94rem !important;
+}
+
+[data-testid="stChatInput"] textarea::placeholder {
+    color: #64748B !important;
+    opacity: 1 !important;
+}
+
+[data-testid="stChatInput"] button {
+    background-color: #2563EB !important;
+    color: #FFFFFF !important;
+    border-radius: 8px !important;
 }
 </style>
 """,
@@ -279,9 +354,9 @@ except requests.exceptions.ConnectionError:
 with st.sidebar:
     st.markdown(
         """
-        <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:1rem;">
-            <span style="font-size:1.15rem;">🏠</span>
-            <span style="font-weight:700; font-size:1.05rem; color:#111827;">Disclosure AI</span>
+        <div style="display:flex; align-items:center; gap:0.55rem; margin-bottom:1rem;">
+            <span style="font-size:1.25rem;">🏠</span>
+            <span style="font-weight:700; font-size:1.1rem; color:#0F172A;">Disclosure AI</span>
         </div>
         """,
         unsafe_allow_html=True,
@@ -295,7 +370,7 @@ with st.sidebar:
     )
     if st.button("＋  Upload Document", type="primary", use_container_width=True):
         if uploaded_file is None:
-            st.toast("Select a PDF file above first.")
+            st.toast("Select a PDF file in the box above first.")
         else:
             with st.spinner(f"Indexing {uploaded_file.name}..."):
                 files = {"file": (uploaded_file.name, uploaded_file.getvalue(), "application/pdf")}
@@ -309,22 +384,22 @@ with st.sidebar:
                     st.error(f"Upload failed: {res.text}")
 
     st.markdown(
-        '<div style="font-size:0.7rem; font-weight:600; letter-spacing:0.06em; color:#6B7280; margin:1.35rem 0 0.6rem 0;">INDEXED DOCUMENTS</div>',
+        '<div style="font-size:0.72rem; font-weight:700; letter-spacing:0.06em; color:#475569; margin:1.35rem 0 0.6rem 0;">INDEXED DOCUMENTS</div>',
         unsafe_allow_html=True,
     )
 
     if not backend_online:
         st.warning("Backend offline (`uvicorn main:app --reload`)")
     elif not docs:
-        st.caption("No documents uploaded yet.")
+        st.info("No documents uploaded yet.")
     else:
         for d in docs:
-            c1, c2 = st.columns([0.84, 0.16], vertical_alignment="center")
+            c1, c2 = st.columns([0.82, 0.18], vertical_alignment="center")
             c1.markdown(
-                f'<div style="font-size:0.83rem; color:#1F2937; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="{html.escape(d)}">📄 {html.escape(d)}</div>',
+                f'<div class="doc-item-pill" title="{html.escape(d)}">📄 {html.escape(d)}</div>',
                 unsafe_allow_html=True,
             )
-            if c2.button("🗑️", key=f"del_{d}", help=f"Delete {d}"):
+            if c2.button("✕", key=f"del_{d}", help=f"Remove {d}"):
                 del_res = requests.delete(f"{API_URL}/documents/{d}", timeout=30)
                 if del_res.ok:
                     st.toast(f"Deleted {d}")
@@ -332,30 +407,29 @@ with st.sidebar:
                 else:
                     st.error(f"Failed: {del_res.text}")
 
-    st.markdown("<div style='height: 3rem;'></div>", unsafe_allow_html=True)
-    st.divider()
+    st.markdown("<div style='height: 2.5rem;'></div>", unsafe_allow_html=True)
     st.markdown(
         f"""
-        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.76rem; color:#6B7280;">
+        <div style="background:#FFFFFF; border:1px solid #E2E8F0; border-radius:8px; padding:0.65rem 0.8rem; display:flex; justify-content:space-between; align-items:center; font-size:0.78rem; color:#475569;">
             <div>
-                <div style="font-weight:600; color:#111827;">Active Binder</div>
+                <div style="font-weight:700; color:#0F172A;">Active Binder</div>
                 <div>{len(docs)} file{"s" if len(docs) != 1 else ""} indexed</div>
             </div>
-            <div style="font-weight:500;">RAG Grounded</div>
+            <span style="background:#DCFCE7; color:#166534; font-weight:600; font-size:0.7rem; padding:0.18rem 0.5rem; border-radius:999px;">Grounded</span>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
 # --- Top Header Bar ---
-top_left, top_right = st.columns([0.75, 0.25], vertical_alignment="center")
+top_left, top_right = st.columns([0.78, 0.22], vertical_alignment="center")
 with top_left:
     st.markdown(
         f"""
-        <div style="display:flex; align-items:center; gap:0.65rem; padding:0.4rem 0;">
+        <div class="top-header-box">
             <span class="badge-active">● Active Context</span>
-            <span style="font-weight:700; font-size:1rem; color:#111827;">Property Disclosure Binder</span>
-            <span style="color:#6B7280; font-size:0.83rem;">· {len(docs)} files indexed &amp; grounded</span>
+            <span style="font-weight:700; font-size:0.98rem; color:#0F172A;">Property Disclosure Binder</span>
+            <span style="color:#475569; font-size:0.83rem;">· {len(docs)} file{"s" if len(docs) != 1 else ""} indexed &amp; grounded</span>
         </div>
         """,
         unsafe_allow_html=True,
@@ -380,47 +454,44 @@ for msg in st.session_state.messages:
         )
     else:
         citations = msg.get("citations", [])
-        st.markdown(
-            '<div class="synthesis-header"><span>▤ Synthesis</span> · <span>Grounded in indexed PDFs</span></div>',
-            unsafe_allow_html=True,
-        )
-        st.markdown(msg["content"])
-
-        if citations:
-            pills_html = "".join(
-                f'<span class="citation-pill">📄 {html.escape(str(c["file_name"]))} · p. {html.escape(str(c["page_number"]))}</span>'
-                for c in citations
-            )
-            top_cite = citations[0]
-            conf_str = (
-                f"Match confidence: {round(top_cite['score'] * 100, 1)}%"
-                if top_cite.get("score") is not None
-                else "Verified excerpt"
-            )
-            excerpt = html.escape(top_cite["snippet"][:320].strip())
-
+        with st.container():
             st.markdown(
-                f"""
-                <div class="findings-card">
-                    <div class="citation-pills">{pills_html}</div>
-                    <div class="verification-box">
-                        <div class="verification-header">
-                            <span>PRIMARY SOURCE VERIFICATION · {html.escape(str(top_cite["file_name"]))} P. {html.escape(str(top_cite["page_number"]))}</span>
-                            <span class="confidence-tag">{conf_str}</span>
-                        </div>
-                        <p class="verification-quote">"{excerpt}..."</p>
-                    </div>
-                </div>
-                """,
+                '<div class="assistant-card"><div class="synthesis-header"><span>▤ Synthesis</span> · <span>Grounded in indexed PDFs</span></div>',
                 unsafe_allow_html=True,
             )
+            st.markdown(msg["content"])
 
-            if len(citations) > 1:
-                with st.expander(f"Inspect all {len(citations)} retrieved source excerpts"):
-                    for idx, c in enumerate(citations, 1):
-                        score_txt = f" ({round(c['score'] * 100, 1)}%)" if c.get("score") is not None else ""
-                        st.markdown(f"**[{idx}] `{c['file_name']}` — Page {c['page_number']}{score_txt}**")
-                        st.code(c["snippet"], language="markdown")
+            if citations:
+                pills_html = "".join(
+                    f'<span class="citation-pill">📄 {html.escape(str(c["file_name"]))} · p. {html.escape(str(c["page_number"]))}</span>'
+                    for c in citations
+                )
+                top_cite = citations[0]
+                excerpt = html.escape(top_cite["snippet"][:320].strip())
+
+                st.markdown(
+                    f"""
+                    <div class="findings-card">
+                        <div class="citation-pills">{pills_html}</div>
+                        <div class="verification-box">
+                            <div class="verification-header">
+                                <span>PRIMARY SOURCE VERIFICATION · {html.escape(str(top_cite["file_name"]))} P. {html.escape(str(top_cite["page_number"]))}</span>
+                                <span class="confidence-tag">Verified source excerpt</span>
+                            </div>
+                            <p class="verification-quote">"{excerpt}..."</p>
+                        </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+
+                if len(citations) > 1:
+                    with st.expander(f"Inspect all {len(citations)} retrieved source excerpts"):
+                        for idx, c in enumerate(citations, 1):
+                            st.markdown(f"**[{idx}] `{c['file_name']}` — Page {c['page_number']}**")
+                            st.code(c["snippet"], language="markdown")
+
+            st.markdown("</div>", unsafe_allow_html=True)
 
 # --- Bottom Floating Input ---
 prompt_input = st.chat_input("Ask anything about your uploaded property documents...")

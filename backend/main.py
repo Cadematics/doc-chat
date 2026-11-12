@@ -1,4 +1,5 @@
 import os
+import re
 import shutil
 import chromadb
 from pathlib import Path
@@ -7,16 +8,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
-from llama_index.core import VectorStoreIndex, StorageContext
+from llama_index.core import VectorStoreIndex, StorageContext, PromptTemplate
 from llama_index.core.retrievers import AutoMergingRetriever
 from llama_index.core.query_engine import RetrieverQueryEngine
+from llama_index.core.storage.docstore import SimpleDocumentStore
 from llama_index.postprocessor.cohere_rerank import CohereRerank
 from llama_index.vector_stores.chroma import ChromaVectorStore
 from llama_index.embeddings.openai import OpenAIEmbedding
 from llama_index.llms.openai import OpenAI
 
 from ingest import ingest_documents_async, delete_document, BASE_DIR, DOCS_DIR, STORAGE_DIR
-
 
 load_dotenv(BASE_DIR / "backend" / ".env")
 
@@ -29,9 +30,36 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+MIN_RELEVANCE_SCORE = 0.02
+
+
+
+QA_PROMPT = PromptTemplate(
+    "You are a senior real estate transaction and disclosure analyst.\n"
+    "Context information from the indexed documents is below:\n"
+    "---------------------\n"
+    "{context_str}\n"
+    "---------------------\n"
+    "Given ONLY the context information above and not prior knowledge, answer the query.\n"
+    "Rules:\n"
+    "1. Synthesize all relevant facts available in the context, even if the document only contains partial details (such as a recorded notice or summary clause) rather than a full narrative.\n"
+    "2. Cite the exact Document Name and Page Number for every factual statement.\n"
+    "3. Quote the exact text, table row, or checkbox state ([X] Yes / [ ] No) that supports your answer.\n"
+    "4. ONLY if zero relevant facts exist in the context above, respond with: "
+    "'Information not found in the provided disclosure documents.'\n\n"
+    "Query: {query_str}\n"
+    "Answer: "
+)
+
+
 
 class QueryRequest(BaseModel):
     question: str
+
+
+def get_indexed_filenames() -> set[str]:
+    DOCS_DIR.mkdir(parents=True, exist_ok=True)
+    return {f.name for f in DOCS_DIR.glob("*.pdf")}
 
 
 def build_query_engine():
@@ -66,14 +94,14 @@ def build_query_engine():
     return RetrieverQueryEngine.from_args(
         retriever,
         node_postprocessors=[reranker],
+        text_qa_template=QA_PROMPT,
         llm=llm,
     )
 
+
 @app.get("/documents")
 def list_documents():
-    DOCS_DIR.mkdir(parents=True, exist_ok=True)
-    pdfs = sorted([f.name for f in DOCS_DIR.glob("*.pdf")])
-    return {"documents": pdfs}
+    return {"documents": sorted(get_indexed_filenames())}
 
 
 @app.post("/upload")
@@ -94,41 +122,8 @@ async def upload_pdf(file: UploadFile = File(...)):
     }
 
 
-@app.post("/ask")
-def ask_question(req: QueryRequest):
-    engine = build_query_engine()
-    grounded_prompt = (
-        "You are a senior real estate transaction and disclosure analyst.\n"
-        "Answer the question SOLELY using the retrieved context.\n"
-        "Strict Rules:\n"
-        "1. Cite the exact Document Name and Page Number for every factual statement.\n"
-        "2. Quote the exact text, table row, or checkbox state ([X] Yes / [ ] No) that supports your answer.\n"
-        "3. If the answer is not explicitly present in the retrieved context, respond ONLY with: "
-        "'Information not found in the provided disclosure documents.' Do not guess or extrapolate.\n\n"
-        f"Question: {req.question}"
-    )
-
-    response = engine.query(grounded_prompt)
-
-    citations = []
-    for node in response.source_nodes:
-        citations.append(
-            {
-                "file_name": node.metadata.get("file_name", "Unknown"),
-                "page_number": node.metadata.get("page_number", "?"),
-                "score": round(node.score, 3) if node.score is not None else None,
-                "snippet": node.text,
-            }
-        )
-
-    return {"answer": str(response), "citations": citations}
-
-
-
-
 @app.delete("/documents/{file_name}")
 def remove_document(file_name: str):
-    # Prevent path traversal attacks
     safe_name = Path(file_name).name
     result = delete_document(safe_name)
     if not result["file_removed"] and result["deleted_vectors"] == 0 and result["deleted_docstore_nodes"] == 0:
@@ -136,5 +131,114 @@ def remove_document(file_name: str):
     return {"status": "deleted", **result}
 
 
+@app.post("/ask")
+def ask_question(req: QueryRequest):
+    indexed_files = sorted(get_indexed_filenames())
+    if not indexed_files:
+        return {
+            "answer": "There are currently no documents in the database. Please upload a PDF first.",
+            "citations": [],
+        }
 
+    q_lower = req.question.strip().lower()
 
+    # 1. Check if the user explicitly referenced a .pdf file that is not in the database
+    mentioned_pdfs = re.findall(r"[\w\-\.\(\)]+\.pdf", req.question, flags=re.IGNORECASE)
+    indexed_lower = {name.lower(): name for name in indexed_files}
+    missing_pdfs = [pdf for pdf in mentioned_pdfs if pdf.lower() not in indexed_lower]
+
+    if missing_pdfs:
+        missing_list = ", ".join(f"`{m}`" for m in missing_pdfs)
+        return {
+            "answer": f"The document {missing_list} is not in the database, so I have no access to it.",
+            "citations": [],
+        }
+
+    # 2. Handle metadata questions about what files are in the database
+    if re.search(
+        r"\b(names?|list|which|what|show|how many)\b.*\b(documents?|files?|pdfs?|uploaded|database|indexed)\b",
+        q_lower,
+    ) and not re.search(r"\b(about|summary|summarize|inside|say|mention|content|details)\b", q_lower):
+        doc_list = "\n".join(f"- `{name}`" for name in indexed_files)
+        return {
+            "answer": f"There {'is' if len(indexed_files) == 1 else 'are'} currently **{len(indexed_files)}** indexed document(s) in the database:\n\n{doc_list}",
+            "citations": [],
+        }
+
+    # 3. Handle broad document overview/summary requests by reading the opening pages directly
+    if re.search(r"\b(tell me about (the |this )?document|summarize (the |this )?document|what is this document|overview of (the )?document)\b", q_lower):
+        docstore_path = STORAGE_DIR / "docstore.json"
+        if docstore_path.exists():
+            docstore = SimpleDocumentStore.from_persist_path(str(docstore_path))
+            # Pick longest parent node per (file_name, page_number) for pages 1-3
+            opening_pages = {}
+            for node in docstore.docs.values():
+                fname = node.metadata.get("file_name")
+                pnum = node.metadata.get("page_number", 999)
+                if fname in indexed_files and isinstance(pnum, int) and pnum <= 3:
+                    key = (fname, pnum)
+                    if key not in opening_pages or len(node.text) > len(opening_pages[key].text):
+                        opening_pages[key] = node
+
+            sorted_nodes = [opening_pages[k] for k in sorted(opening_pages.keys())]
+            if sorted_nodes:
+                context_block = "\n\n---\n\n".join(
+                    f"[{n.metadata['file_name']} - Page {n.metadata['page_number']}]\n{n.text}"
+                    for n in sorted_nodes
+                )
+                llm = OpenAI(model="gpt-4o", temperature=0.0)
+                summary_prompt = (
+                    "Provide a clear, structured executive overview of the indexed real estate document(s) "
+                    "based ONLY on the opening pages below. Cite the exact Document Name and Page Number.\n\n"
+                    f"{context_block}"
+                )
+                summary_resp = llm.complete(summary_prompt)
+                citations = [
+                    {
+                        "file_name": n.metadata.get("file_name", "Unknown"),
+                        "page_number": n.metadata.get("page_number", "?"),
+                        "score": 1.0,
+                        "snippet": n.text,
+                    }
+                    for n in sorted_nodes[:4]
+                ]
+                return {"answer": str(summary_resp).strip(), "citations": citations}
+
+    # 4. Standard targeted RAG retrieval + Cohere reranking
+    # 4. Standard targeted RAG retrieval + Cohere reranking
+    engine = build_query_engine()
+    response = engine.query(req.question)
+
+    answer_text = str(response).strip()
+    if not response.source_nodes or "information not found in the provided disclosure documents" in answer_text.lower():
+        return {
+            "answer": "Information not found in the provided disclosure documents.",
+            "citations": [],
+        }
+
+    # Keep top reranked source nodes (deduplicated by file_name + page_number)
+    seen_pages = set()
+    citations = []
+    for node in response.source_nodes:
+        fname = node.metadata.get("file_name", "Unknown")
+        pnum = node.metadata.get("page_number", "?")
+        key = (fname, pnum)
+        if key in seen_pages:
+            continue
+        seen_pages.add(key)
+
+        try:
+            score_val = round(float(node.score), 3) if node.score is not None else None
+        except (TypeError, ValueError):
+            score_val = None
+
+        citations.append(
+            {
+                "file_name": fname,
+                "page_number": pnum,
+                "score": score_val,
+                "snippet": node.text,
+            }
+        )
+
+    return {"answer": answer_text, "citations": citations}
