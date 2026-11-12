@@ -18,38 +18,39 @@ A zero-hallucination RAG web app for chatting with complex, multi-hundred-page P
 
 ## Quickstart
 
-### 1. Setup Environment
+#### 1. Setup Environment
 ```bash
 python3 -m venv venv
 source venv/bin/activate
 pip install -r backend/requirements.txt
-2. Add API Keys
-Create backend/.env and add your keys:
 ```
 
+#### 2. Add API Keys
+Create backend/.env and add your keys:
 
-Code snippet
+
+
 ```bash
 OPENAI_API_KEY=your_openai_key
 LLAMA_CLOUD_API_KEY=your_llamacloud_key
 COHERE_API_KEY=your_cohere_key
 ```
 
-3. Index PDFs & Run the App
+#### 3. Index PDFs & Run the App
 Place your PDFs inside docs/, then run:
 
 
-# 1. Parse and index documents
+##### 1. Parse and index documents
 ```bash
 cd backend && python ingest.py
 ```
-# 2. Start the FastAPI server (Terminal 1)
+##### 2. Start the FastAPI server (Terminal 1)
 ```bash
 uvicorn main:app --reload --port 8000
 ```
 
 
-# 3. Start the Streamlit UI (Terminal 2)
+#### 3. Start the Streamlit UI (Terminal 2)
 ```bash
 cd ../frontend && streamlit run app.py
 ```
