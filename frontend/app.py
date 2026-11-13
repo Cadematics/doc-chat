@@ -6,7 +6,7 @@ import streamlit as st
 API_URL = os.getenv("API_URL", "http://localhost:8000").rstrip("/")
 
 st.set_page_config(
-    page_title="Disclosure AI",
+    page_title="Doc-Chat",
     page_icon="🏠",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -60,7 +60,14 @@ section[data-testid="stSidebar"] > div {
     padding-right: 1rem;
 }
 
-/* File Uploader Box in Sidebar */
+/* File Uploader Label & Box in Sidebar */
+section[data-testid="stSidebar"] [data-testid="stFileUploader"] label {
+    font-size: 0.78rem !important;
+    font-weight: 600 !important;
+    color: #334155 !important;
+    margin-bottom: 0.25rem !important;
+}
+
 section[data-testid="stSidebar"] [data-testid="stFileUploader"] section {
     background-color: #FFFFFF !important;
     border: 1.5px dashed #94A3B8 !important;
@@ -130,23 +137,6 @@ section[data-testid="stSidebar"] .stButton > button[kind="secondary"]:hover {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-}
-
-/* Main Area Secondary Buttons (e.g., New Analysis) */
-.main .stButton > button[kind="secondary"] {
-    background-color: #FFFFFF !important;
-    color: #1E293B !important;
-    border: 1px solid #CBD5E1 !important;
-    border-radius: 8px !important;
-    font-size: 0.82rem !important;
-    font-weight: 600 !important;
-    padding: 0.4rem 0.85rem !important;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-}
-
-.main .stButton > button[kind="secondary"]:hover {
-    background-color: #F1F5F9 !important;
-    border-color: #94A3B8 !important;
 }
 
 /* --- Centered Chat Container --- */
@@ -357,19 +347,19 @@ with st.sidebar:
         """
         <div style="display:flex; align-items:center; gap:0.55rem; margin-bottom:1rem;">
             <span style="font-size:1.25rem;">🏠</span>
-            <span style="font-weight:700; font-size:1.1rem; color:#0F172A;">Disclosure AI</span>
+            <span style="font-weight:700; font-size:1.1rem; color:#0F172A;">Doc-Chat</span>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
     uploaded_file = st.file_uploader(
-        "Upload PDF",
+        "Find document",
         type=["pdf"],
-        label_visibility="collapsed",
+        label_visibility="visible",
         key=f"pdf_uploader_{st.session_state.uploader_key}",
     )
-    if st.button("＋  Upload Document", type="primary", use_container_width=True):
+    if st.button("＋  Upload documents", type="primary", use_container_width=True):
         if uploaded_file is None:
             st.toast("Select a PDF file in the box above first.")
         else:
@@ -423,25 +413,19 @@ with st.sidebar:
     )
 
 # --- Top Header Bar ---
-top_left, top_right = st.columns([0.78, 0.22], vertical_alignment="center")
-with top_left:
-    st.markdown(
-        f"""
-        <div class="top-header-box">
-            <span class="badge-active">● Active Context</span>
-            <span style="font-weight:700; font-size:0.98rem; color:#0F172A;">Property Disclosure Binder</span>
-            <span style="color:#475569; font-size:0.83rem;">· {len(docs)} file{"s" if len(docs) != 1 else ""} indexed &amp; grounded</span>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-with top_right:
-    if st.button("↻ New Analysis", use_container_width=True):
-        st.session_state.messages = []
-        st.rerun()
+st.markdown(
+    f"""
+    <div class="top-header-box">
+        <span class="badge-active">● Active Context</span>
+        <span style="font-weight:700; font-size:0.98rem; color:#0F172A;">Property Disclosure Binder</span>
+        <span style="color:#475569; font-size:0.83rem;">· {len(docs)} file{"s" if len(docs) != 1 else ""} indexed &amp; grounded</span>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 st.markdown(
-    '<div class="status-pill-center"><span>○ Deterministic RAG Engine Active · Zero exterior web hallucinations</span></div>',
+    '<div class="status-pill-center"><span>○ RAG engine</span></div>',
     unsafe_allow_html=True,
 )
 
