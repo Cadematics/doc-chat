@@ -10,9 +10,16 @@ from llama_index.core.storage.docstore import SimpleDocumentStore
 from llama_index.vector_stores.chroma import ChromaVectorStore
 from llama_index.embeddings.openai import OpenAIEmbedding
 
+
+
+
+
+
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 DOCS_DIR = BASE_DIR / "docs"
 STORAGE_DIR = BASE_DIR / "storage"
+DATA_ROOT = Path(os.getenv("RENDER_DATA_DIR", str(BASE_DIR)))
 load_dotenv(BASE_DIR / "backend" / ".env")
 
 
