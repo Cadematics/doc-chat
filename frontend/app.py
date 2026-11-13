@@ -12,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# --- High-Contrast Light Editorial CSS ---
+# --- Editorial Light UI Matching Reference Mockup ---
 st.markdown(
     """
 <style>
@@ -20,10 +20,10 @@ st.markdown(
 
 html, body, [class*="css"] {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    color: #0F172A !important;
+    color: #111827 !important;
 }
 
-/* Hide menu/footer but keep sidebar expand button reachable */
+/* Hide Streamlit chrome while keeping sidebar toggle reachable */
 #MainMenu, footer {
     visibility: hidden;
     height: 0;
@@ -33,107 +33,110 @@ header[data-testid="stHeader"] {
     background: transparent !important;
 }
 
-/* Soft Cool-Gray Main Canvas */
+/* Pure White Main Canvas */
 .stApp, [data-testid="stAppViewContainer"], .main {
-    background-color: #F8FAFC !important;
+    background-color: #FFFFFF !important;
 }
 
-/* Bottom Bar Container */
+/* Bottom Bar Area */
 [data-testid="stBottom"], [data-testid="stBottom"] > div {
-    background-color: #F8FAFC !important;
-    border-top: 1px solid #E2E8F0 !important;
+    background-color: #FFFFFF !important;
+    border-top: none !important;
 }
 
-/* --- Left Sidebar (Always Visible & Distinct Cool Slate Tint) --- */
+/* --- Left Sidebar --- */
 section[data-testid="stSidebar"] {
-    background-color: #F1F5F9 !important;
-    border-right: 1px solid #CBD5E1 !important;
-    min-width: 295px !important;
-    max-width: 295px !important;
+    background-color: #FAFAFA !important;
+    border-right: 1px solid #ECEEF2 !important;
+    min-width: 270px !important;
+    max-width: 270px !important;
     transform: none !important;
     visibility: visible !important;
 }
 
 section[data-testid="stSidebar"] > div {
-    padding-top: 1.25rem;
+    padding-top: 1.15rem;
     padding-left: 1rem;
     padding-right: 1rem;
 }
 
-/* File Uploader Label & Box in Sidebar */
+/* Compact File Uploader in Sidebar */
 section[data-testid="stSidebar"] [data-testid="stFileUploader"] label {
-    font-size: 0.78rem !important;
+    font-size: 0.72rem !important;
     font-weight: 600 !important;
-    color: #334155 !important;
+    letter-spacing: 0.04em !important;
+    text-transform: uppercase !important;
+    color: #6B7280 !important;
     margin-bottom: 0.25rem !important;
 }
 
 section[data-testid="stSidebar"] [data-testid="stFileUploader"] section {
     background-color: #FFFFFF !important;
-    border: 1.5px dashed #94A3B8 !important;
-    border-radius: 10px !important;
-    padding: 0.75rem !important;
+    border: 1px dashed #D1D5DB !important;
+    border-radius: 8px !important;
+    padding: 0.55rem 0.65rem !important;
 }
 
 section[data-testid="stSidebar"] [data-testid="stFileUploader"] small,
 section[data-testid="stSidebar"] [data-testid="stFileUploader"] span,
 section[data-testid="stSidebar"] [data-testid="stFileUploader"] div {
-    color: #334155 !important;
+    color: #4B5563 !important;
+    font-size: 0.76rem !important;
 }
 
 section[data-testid="stSidebar"] [data-testid="stFileUploader"] button {
-    background-color: #EFF6FF !important;
-    color: #1D4ED8 !important;
-    border: 1px solid #BFDBFE !important;
+    background-color: #F3F4F6 !important;
+    color: #111827 !important;
+    border: 1px solid #E5E7EB !important;
     border-radius: 6px !important;
-    font-weight: 600 !important;
+    font-weight: 500 !important;
+    font-size: 0.75rem !important;
+    padding: 0.2rem 0.55rem !important;
 }
 
-/* Primary Dark Upload Action Button */
+/* Primary Solid Black Upload Button (+ Upload documents) */
 section[data-testid="stSidebar"] .stButton > button[kind="primary"] {
-    background-color: #1E293B !important;
+    background-color: #18181B !important;
     color: #FFFFFF !important;
     border: none !important;
     border-radius: 8px !important;
-    font-weight: 600 !important;
-    font-size: 0.875rem !important;
-    padding: 0.55rem 1rem !important;
-    margin-top: 0.35rem;
-    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12);
+    font-weight: 500 !important;
+    font-size: 0.84rem !important;
+    padding: 0.5rem 0.9rem !important;
+    margin-top: 0.25rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
 }
 
 section[data-testid="stSidebar"] .stButton > button[kind="primary"]:hover {
-    background-color: #0F172A !important;
+    background-color: #27272A !important;
 }
 
-/* Clean Light Delete Button next to each Document */
+/* Subtle Delete Button next to Indexed Documents */
 section[data-testid="stSidebar"] .stButton > button[kind="secondary"] {
-    background-color: #FFFFFF !important;
-    border: 1px solid #E2E8F0 !important;
-    color: #64748B !important;
+    background: transparent !important;
+    border: none !important;
+    color: #9CA3AF !important;
     border-radius: 6px !important;
-    padding: 0.15rem 0.45rem !important;
-    min-height: 28px !important;
-    font-size: 0.78rem !important;
-    font-weight: 600 !important;
+    padding: 0.1rem 0.35rem !important;
+    min-height: 26px !important;
+    font-size: 0.76rem !important;
+    font-weight: 500 !important;
     box-shadow: none !important;
 }
 
 section[data-testid="stSidebar"] .stButton > button[kind="secondary"]:hover {
-    background-color: #FEF2F2 !important;
-    border-color: #FECACA !important;
+    background-color: #FEE2E2 !important;
     color: #DC2626 !important;
 }
 
-/* Document Row Card in Sidebar */
-.doc-item-pill {
-    background-color: #FFFFFF;
-    border: 1px solid #E2E8F0;
-    border-radius: 8px;
-    padding: 0.45rem 0.65rem;
-    font-size: 0.82rem;
+/* Document Row Styling */
+.doc-item-row {
+    background-color: #EFF6FF;
+    border-radius: 7px;
+    padding: 0.42rem 0.6rem;
+    font-size: 0.8rem;
     font-weight: 500;
-    color: #0F172A;
+    color: #1E293B;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -141,123 +144,127 @@ section[data-testid="stSidebar"] .stButton > button[kind="secondary"]:hover {
 
 /* --- Centered Chat Container --- */
 .main .block-container {
-    max-width: 840px !important;
-    padding-top: 0.75rem !important;
-    padding-bottom: 6.5rem !important;
+    max-width: 820px !important;
+    padding-top: 0.65rem !important;
+    padding-bottom: 7.5rem !important;
 }
 
-/* Top Header Card */
-.top-header-box {
-    background-color: #FFFFFF;
-    border: 1px solid #E2E8F0;
-    border-radius: 12px;
-    padding: 0.75rem 1.15rem;
+/* Flat Top Context Bar */
+.top-context-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.45rem 0.25rem 0.85rem 0.25rem;
+    border-bottom: 1px solid #F1F5F9;
+}
+
+.top-context-left {
     display: flex;
     align-items: center;
-    gap: 0.7rem;
-    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+    gap: 0.65rem;
 }
 
 .badge-active {
-    background-color: #DBEAFE;
-    color: #1D4ED8;
+    background-color: #EEF2FF;
+    color: #2563EB;
     font-weight: 600;
-    font-size: 0.75rem;
-    padding: 0.22rem 0.65rem;
+    font-size: 0.73rem;
+    padding: 0.2rem 0.6rem;
     border-radius: 999px;
 }
 
+.top-context-right {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #4B5563;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+/* Centered RAG Engine Pill */
 .status-pill-center {
     display: flex;
     justify-content: center;
-    margin: 1.1rem 0 1.6rem 0;
+    margin: 1.15rem 0 1.75rem 0;
 }
 
 .status-pill-center span {
-    background-color: #EFF6FF;
-    border: 1px solid #BFDBFE;
-    color: #1E40AF;
-    font-size: 0.76rem;
+    background-color: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    color: #475569;
+    font-size: 0.74rem;
     font-weight: 500;
-    padding: 0.32rem 0.95rem;
+    padding: 0.28rem 0.85rem;
     border-radius: 999px;
 }
 
-/* User Message Bubble */
+/* Right-Aligned Soft Blue-Slate User Bubble */
 .user-row {
     display: flex;
     justify-content: flex-end;
-    margin: 1.15rem 0;
+    margin: 1.25rem 0 1.5rem 0;
 }
 
 .user-bubble {
-    background-color: #DBEAFE;
-    border: 1px solid #BFDBFE;
-    color: #0F172A;
+    background-color: #E8EEF5;
+    color: #1E293B;
     padding: 0.85rem 1.15rem;
-    border-radius: 14px 14px 4px 14px;
-    max-width: 74%;
-    font-size: 0.94rem;
-    font-weight: 500;
+    border-radius: 14px;
+    max-width: 72%;
+    font-size: 0.92rem;
+    font-weight: 400;
     line-height: 1.5;
 }
 
-/* Assistant Response Card */
-.assistant-card {
-    background-color: #FFFFFF;
-    border: 1px solid #E2E8F0;
-    border-radius: 14px;
-    padding: 1.15rem 1.35rem;
-    margin-bottom: 1.25rem;
-    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
-}
-
+/* Borderless Editorial Synthesis Header */
 .synthesis-header {
     display: flex;
     align-items: center;
-    gap: 0.45rem;
+    gap: 0.4rem;
     font-size: 0.78rem;
-    color: #475569;
-    margin-bottom: 0.6rem;
+    color: #6B7280;
+    margin-bottom: 0.55rem;
+}
+
+.synthesis-header strong {
+    color: #111827;
     font-weight: 600;
 }
 
-/* Citation Card & Primary Source Verification Box */
+/* Findings Card & Primary Source Verification Box */
 .findings-card {
     background-color: #F8FAFC;
-    border: 1px solid #CBD5E1;
-    border-radius: 10px;
-    padding: 0.9rem 1.05rem;
-    margin-top: 0.85rem;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 0.95rem 1.1rem;
+    margin-top: 0.4rem;
 }
 
 .citation-pills {
     display: flex;
     flex-wrap: wrap;
     gap: 0.45rem;
-    margin-bottom: 0.7rem;
+    margin-bottom: 0.75rem;
 }
 
 .citation-pill {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    background-color: #EFF6FF;
-    border: 1px solid #BFDBFE;
+    background-color: #FFFFFF;
+    border: 1px solid #E2E8F0;
     border-radius: 6px;
     padding: 0.22rem 0.6rem;
-    font-size: 0.76rem;
-    font-weight: 600;
-    color: #1E40AF;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #334155;
 }
 
 .verification-box {
     background-color: #FFFFFF;
-    border-left: 3px solid #2563EB;
-    border-top: 1px solid #E2E8F0;
-    border-right: 1px solid #E2E8F0;
-    border-bottom: 1px solid #E2E8F0;
-    border-radius: 6px;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
     padding: 0.8rem 0.95rem;
 }
 
@@ -265,19 +272,16 @@ section[data-testid="stSidebar"] .stButton > button[kind="secondary"]:hover {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     font-weight: 700;
     letter-spacing: 0.04em;
-    color: #475569;
+    color: #6B7280;
     text-transform: uppercase;
     margin-bottom: 0.35rem;
 }
 
 .confidence-tag {
-    background-color: #DCFCE7;
-    color: #166534;
-    padding: 0.12rem 0.45rem;
-    border-radius: 4px;
+    color: #111827;
     font-weight: 600;
     text-transform: none;
     letter-spacing: normal;
@@ -285,38 +289,38 @@ section[data-testid="stSidebar"] .stButton > button[kind="secondary"]:hover {
 
 .verification-quote {
     font-style: italic;
-    color: #1E293B;
-    font-size: 0.85rem;
+    color: #374151;
+    font-size: 0.84rem;
     line-height: 1.5;
     margin: 0;
 }
 
-/* Readable High-Contrast Chat Input Box */
+/* Floating Prompt Input */
 [data-testid="stChatInput"] {
-    max-width: 800px;
+    max-width: 780px;
     margin: 0 auto;
 }
 
 [data-testid="stChatInput"] > div {
-    border-radius: 12px !important;
-    border: 1.5px solid #94A3B8 !important;
-    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08) !important;
+    border-radius: 14px !important;
+    border: 1px solid #E5E7EB !important;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06) !important;
     background-color: #FFFFFF !important;
 }
 
 [data-testid="stChatInput"] textarea {
-    color: #0F172A !important;
+    color: #111827 !important;
     background-color: #FFFFFF !important;
-    font-size: 0.94rem !important;
+    font-size: 0.92rem !important;
 }
 
 [data-testid="stChatInput"] textarea::placeholder {
-    color: #64748B !important;
+    color: #9CA3AF !important;
     opacity: 1 !important;
 }
 
 [data-testid="stChatInput"] button {
-    background-color: #2563EB !important;
+    background-color: #18181B !important;
     color: #FFFFFF !important;
     border-radius: 8px !important;
 }
@@ -345,9 +349,9 @@ except requests.exceptions.ConnectionError:
 with st.sidebar:
     st.markdown(
         """
-        <div style="display:flex; align-items:center; gap:0.55rem; margin-bottom:1rem;">
-            <span style="font-size:1.25rem;">🏠</span>
-            <span style="font-weight:700; font-size:1.1rem; color:#0F172A;">Doc-Chat</span>
+        <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.9rem;">
+            <span style="font-size:1.15rem;">🏠</span>
+            <span style="font-weight:700; font-size:1.05rem; color:#111827;">Doc-Chat</span>
         </div>
         """,
         unsafe_allow_html=True,
@@ -375,19 +379,19 @@ with st.sidebar:
                     st.error(f"Upload failed: {res.text}")
 
     st.markdown(
-        '<div style="font-size:0.72rem; font-weight:700; letter-spacing:0.06em; color:#475569; margin:1.35rem 0 0.6rem 0;">INDEXED DOCUMENTS</div>',
+        '<div style="font-size:0.68rem; font-weight:700; letter-spacing:0.06em; color:#6B7280; margin:1.25rem 0 0.55rem 0;">INDEXED DOCUMENTS</div>',
         unsafe_allow_html=True,
     )
 
     if not backend_online:
         st.warning("Backend offline (`uvicorn main:app --reload`)")
     elif not docs:
-        st.info("No documents uploaded yet.")
+        st.caption("No documents uploaded yet.")
     else:
         for d in docs:
-            c1, c2 = st.columns([0.82, 0.18], vertical_alignment="center")
+            c1, c2 = st.columns([0.85, 0.15], vertical_alignment="center")
             c1.markdown(
-                f'<div class="doc-item-pill" title="{html.escape(d)}">📄 {html.escape(d)}</div>',
+                f'<div class="doc-item-row" title="{html.escape(d)}">📄 {html.escape(d)}</div>',
                 unsafe_allow_html=True,
             )
             if c2.button("✕", key=f"del_{d}", help=f"Remove {d}"):
@@ -398,27 +402,31 @@ with st.sidebar:
                 else:
                     st.error(f"Failed: {del_res.text}")
 
-    st.markdown("<div style='height: 2.5rem;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height: 3.5rem;'></div>", unsafe_allow_html=True)
     st.markdown(
         f"""
-        <div style="background:#FFFFFF; border:1px solid #E2E8F0; border-radius:8px; padding:0.65rem 0.8rem; display:flex; justify-content:space-between; align-items:center; font-size:0.78rem; color:#475569;">
+        <div style="border-top:1px solid #ECEEF2; padding-top:0.75rem; display:flex; justify-content:space-between; align-items:flex-end; font-size:0.75rem; color:#6B7280;">
             <div>
-                <div style="font-weight:700; color:#0F172A;">Active Binder</div>
+                <div style="font-weight:600; color:#111827;">Active Binder</div>
                 <div>{len(docs)} file{"s" if len(docs) != 1 else ""} indexed</div>
             </div>
-            <span style="background:#DCFCE7; color:#166534; font-weight:600; font-size:0.7rem; padding:0.18rem 0.5rem; border-radius:999px;">Grounded</span>
+            <div style="font-weight:500; color:#4B5563;">Grounded</div>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-# --- Top Header Bar ---
+# --- Top Context Header ---
 st.markdown(
     f"""
-    <div class="top-header-box">
-        <span class="badge-active">● Active Context</span>
-        <span style="font-weight:700; font-size:0.98rem; color:#0F172A;">Property Disclosure Binder</span>
-        <span style="color:#475569; font-size:0.83rem;">· {len(docs)} file{"s" if len(docs) != 1 else ""} indexed &amp; grounded</span>
+    <div class="top-context-bar">
+        <div class="top-context-left">
+            <span class="badge-active">● Active Context</span>
+            <span style="font-weight:700; font-size:0.96rem; color:#111827;">Property Disclosure Binder</span>
+        </div>
+        <div class="top-context-right">
+            <span>✓ {len(docs)} file{"s" if len(docs) != 1 else ""} indexed &amp; grounded</span>
+        </div>
     </div>
     """,
     unsafe_allow_html=True,
@@ -439,49 +447,48 @@ for msg in st.session_state.messages:
         )
     else:
         citations = msg.get("citations", [])
-        with st.container():
-            st.markdown(
-                '<div class="assistant-card"><div class="synthesis-header"><span>▤ Synthesis</span> · <span>Grounded in indexed PDFs</span></div>',
-                unsafe_allow_html=True,
+        st.markdown(
+            '<div class="synthesis-header"><span>▤</span> <strong>Synthesis</strong> · <span>Grounded in indexed PDFs</span></div>',
+            unsafe_allow_html=True,
+        )
+        st.markdown(msg["content"])
+
+        if citations:
+            pills_html = "".join(
+                f'<span class="citation-pill">📄 {html.escape(str(c["file_name"]))} · p. {html.escape(str(c["page_number"]))}</span>'
+                for c in citations
             )
-            st.markdown(msg["content"])
+            top_cite = citations[0]
+            excerpt = html.escape(top_cite["snippet"][:320].strip())
+            label = (
+                f"View primary source verification & all {len(citations)} retrieved excerpts"
+                if len(citations) > 1
+                else "View primary source verification"
+            )
 
-            if citations:
-                pills_html = "".join(
-                    f'<span class="citation-pill">📄 {html.escape(str(c["file_name"]))} · p. {html.escape(str(c["page_number"]))}</span>'
-                    for c in citations
-                )
-                top_cite = citations[0]
-                excerpt = html.escape(top_cite["snippet"][:320].strip())
-                label = (
-                    f"View primary source verification & all {len(citations)} retrieved excerpts"
-                    if len(citations) > 1
-                    else "View primary source verification"
-                )
-
-                with st.expander(label, expanded=False):
-                    st.markdown(
-                        f"""
-                        <div class="findings-card" style="margin-top:0; margin-bottom:0.75rem;">
-                            <div class="citation-pills">{pills_html}</div>
-                            <div class="verification-box">
-                                <div class="verification-header">
-                                    <span>PRIMARY SOURCE VERIFICATION · {html.escape(str(top_cite["file_name"]))} P. {html.escape(str(top_cite["page_number"]))}</span>
-                                    <span class="confidence-tag">Verified source excerpt</span>
-                                </div>
-                                <p class="verification-quote">"{excerpt}..."</p>
+            with st.expander(label, expanded=False):
+                st.markdown(
+                    f"""
+                    <div class="findings-card" style="margin-top:0; margin-bottom:0.75rem;">
+                        <div class="citation-pills">{pills_html}</div>
+                        <div class="verification-box">
+                            <div class="verification-header">
+                                <span>PRIMARY SOURCE VERIFICATION · {html.escape(str(top_cite["file_name"]))} P. {html.escape(str(top_cite["page_number"]))}</span>
+                                <span class="confidence-tag">Verified source excerpt</span>
                             </div>
+                            <p class="verification-quote">"{excerpt}..."</p>
                         </div>
-                        """,
-                        unsafe_allow_html=True,
-                    )
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
 
-                    if len(citations) > 1:
-                        for idx, c in enumerate(citations, 1):
-                            st.markdown(f"**[{idx}] `{c['file_name']}` — Page {c['page_number']}**")
-                            st.code(c["snippet"], language="markdown")
+                if len(citations) > 1:
+                    for idx, c in enumerate(citations, 1):
+                        st.markdown(f"**[{idx}] `{c['file_name']}` — Page {c['page_number']}**")
+                        st.code(c["snippet"], language="markdown")
 
-            st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown("<div style='height: 0.75rem;'></div>", unsafe_allow_html=True)
 
 # --- Bottom Floating Input ---
 prompt_input = st.chat_input("Ask anything about your uploaded property documents...")
